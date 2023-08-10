@@ -53,13 +53,12 @@ pub mod pallet {
                                         type Currency: Currency<Self::AccountId>;
 	}
 
-	#[pallet::storage]
+	/// Tracks the next execution ID
+                    #[pallet::storage]
                     #[pallet::getter(fn next_execution_id)]
                     pub type NextExecutionId<T: Config> = StorageValue<_, ExecutionId, ValueQuery>;
 
                     /// Executions store a map of SideEffect sequences organised by ExecutionId, generated through the create_execution_sequence extrinsic
-                    /// - execution_id
-                    /// - vec <SideEffect>
                     #[pallet::storage]
                     #[pallet::getter(fn get_execution_sequence)]
                     pub type Executions<T: Config> = StorageMap<_, Twox64Concat, ExecutionId, Vec<SideEffect<T::AccountId,BalanceOf<T>>>, ValueQuery>;
@@ -83,8 +82,12 @@ pub mod pallet {
 	// Dispatchable functions must be annotated with a weight and must return a DispatchResult.
 	#[pallet::call]
 	impl<T: Config> Pallet<T> {
-		/// An example dispatchable that takes a singles value as a parameter, writes the value to
-		/// storage and emits an event. This function must be dispatched by a signed extrinsic.
+		// Create execution sequence of SideEffects with ExecutionId from encoded data.
+		///
+		/// The dispatch origin for this call must be _Signed_.
+		/// `data`: the encoded data as vector of bytes
+		///
+		/// Emits `ExecutionSequenceCreated` if successful.
 		#[pallet::weight(Weight::from_parts(195_000, 1) + T::DbWeight::get().writes(1))]
                                         pub fn create_execution_sequence(
                                                             origin: OriginFor<T>,
@@ -176,7 +179,7 @@ pub mod pallet {
                     
                                         /// Internal action arguments extran
                                         fn extract_arguments(action: &Action, data: Vec<u8>) -> Result<Vec<u8>, DispatchError> {
-                                                            let mut data_iter = data.split(|c|  *c ==  124); // "|" is 12
+                                                            let mut data_iter = data.split(|c|  *c ==  124); // "|" = 124
                     
                                                             match *action {
                                                                                 Action::TransferMulti => {
