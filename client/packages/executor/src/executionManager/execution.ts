@@ -66,7 +66,6 @@ export class Execution extends EventEmitter {
     this.xtxId = eventData[1];
     this.id = this.xtxId.toHex();
     this.humanId = this.id.slice(0, 8);
-    this.prometheus = prometheus;
     this.initializeSideEffects(
       eventData[2],
       eventData[3],
@@ -75,6 +74,7 @@ export class Execution extends EventEmitter {
       biddingEngine,
     );
     this.currentPhase = 0;
+    this.prometheus = prometheus;
   }
 
   /**

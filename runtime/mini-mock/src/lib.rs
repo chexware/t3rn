@@ -94,8 +94,8 @@ frame_support::construct_runtime!(
         RococoBridge: pallet_grandpa_finality_verifier = 129,
         PolkadotBridge: pallet_grandpa_finality_verifier::<Instance1> = 130,
         KusamaBridge: pallet_grandpa_finality_verifier::<Instance2> = 131,
-        EthereumBridge: pallet_eth2_finality_verifier = 132,
-        SepoliaBridge: pallet_sepolia_finality_verifier = 133,
+        //EthereumBridge: pallet_eth2_finality_verifier = 132,
+        //SepoliaBridge: pallet_sepolia_finality_verifier = 133,
 
     }
 );
@@ -348,12 +348,14 @@ impl pallet_portal::SelectLightClient<MiniRuntime> for SelectLightClientRegistry
                 select_grandpa_light_client_instance::<MiniRuntime, PolkadotInstance>(vendor)
                     .ok_or(PortalError::<MiniRuntime>::LightClientNotFoundByVendor)
                     .map(|lc| Box::new(lc) as Box<dyn LightClient<MiniRuntime>>),
+            /*
             GatewayVendor::Ethereum => Ok(Box::new(pallet_eth2_finality_verifier::Pallet::<
                 MiniRuntime,
             >(PhantomData))),
             GatewayVendor::Sepolia => Ok(Box::new(pallet_sepolia_finality_verifier::Pallet::<
                 MiniRuntime,
             >(PhantomData))),
+             */
             _ => Err(PortalError::<MiniRuntime>::UnimplementedGatewayVendor),
         }
     }
@@ -373,7 +375,7 @@ parameter_types! {
     pub const EpochsPerSyncCommitteePeriod: u32 = 6;
     pub const CommitteeMajorityThreshold: u32 = 80;
 }
-
+/* 
 impl pallet_eth2_finality_verifier::Config for MiniRuntime {
     type CommitteeMajorityThreshold = CommitteeMajorityThreshold;
     type EpochsPerSyncCommitteePeriod = EpochsPerSyncCommitteePeriod;
@@ -397,7 +399,7 @@ impl pallet_sepolia_finality_verifier::Config for MiniRuntime {
     type SyncCommitteeSize = SyncCommitteeSize;
     type WeightInfo = ();
 }
-
+*/
 impl pallet_timestamp::Config for MiniRuntime {
     type MinimumPeriod = MinimumPeriod;
     /// A timestamp: milliseconds since the unix epoch.
@@ -1021,7 +1023,8 @@ impl ExtBuilder {
         ext
     }
 }
-use pallet_eth2_finality_verifier::LightClientAsyncAPI;
+
+// /use pallet_eth2_finality_verifier::LightClientAsyncAPI;
 
 pub fn make_all_light_clients_move_2_times_by(move_by: u32) {
     use t3rn_primitives::portal::Portal as PortalT;

@@ -494,7 +494,7 @@ parameter_types! {
     pub const HeadersToStoreEth: u32 = 50400 + 1; // 1 week + 1. We want a multiple of 32 + 1.
     pub const CommitteeMajorityThreshold: u32 = 80;
 }
-
+/* 
 impl pallet_eth2_finality_verifier::Config for Runtime {
     type CommitteeMajorityThreshold = CommitteeMajorityThreshold;
     type EpochsPerSyncCommitteePeriod = EpochsPerSyncCommitteePeriod;
@@ -518,3 +518,5 @@ impl pallet_sepolia_finality_verifier::Config for Runtime {
     type SyncCommitteeSize = SyncCommitteeSize;
     type WeightInfo = ();
 }
+*/
+

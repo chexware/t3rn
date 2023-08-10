@@ -1,0 +1,54 @@
+[package]
+authors     = [ "Aleksandar Brayanov <aleksandar.brayanov@protonmail.com>" ]
+description = "Take At Home Task"
+edition     = "2021"
+homepage    = "https://t3rn.io"
+license     = "Apache-2.0"
+name        = "pallet-executor-sequence"
+readme      = "README.md"
+repository  = "https://github.com/paritytech/substrate/"
+version     = "1.0.0"
+
+[package.metadata.docs.rs]
+targets = [ "x86_64-unknown-linux-gnu" ]
+
+[dependencies]
+# Debug
+log        = { version = "0.4", default-features = false }
+
+# Codec - related
+codec            = { package = "parity-scale-codec", version = "3.0.0", default-features = false, features = [ "derive", "max-encoded-len" ] }
+scale-info       = { version = "2.9.0", default-features = false, features = [ "derive" ] }
+serde            = { version = "1.0", default-features = false, optional = true, features = [ "derive" ] }
+
+# Substrate Primitives
+sp-runtime = { default-features = false, git = "https://github.com/paritytech/substrate", branch = 'polkadot-v0.9.27' }
+sp-std = { default-features = false, git = "https://github.com/paritytech/substrate", branch = 'polkadot-v0.9.27' }
+
+# Substrate Dependencies
+frame-support = { default-features = false, git = "https://github.com/paritytech/substrate", branch = 'polkadot-v0.9.27' }
+frame-system  = { default-features = false, git = "https://github.com/paritytech/substrate", branch = 'polkadot-v0.9.27' }
+pallet-balances = { git = "https://github.com/paritytech/substrate", branch = 'polkadot-v0.9.27', default-features = false }
+
+# T3rn Primitives
+t3rn-primitives = { default-features = false, path = "../../primitives" }
+t3rn-types = { default-features = false, path = "../../types", features = [ "runtime" ] }
+
+[dev-dependencies]
+sp-core = { git = "https://github.com/paritytech/substrate", branch = 'polkadot-v0.9.27' }
+sp-io = { git = "https://github.com/paritytech/substrate", branch = 'polkadot-v0.9.27' }
+
+[features]
+default = [ "std" ]
+std = [
+  "codec/std",
+  "scale-info/std",
+  "frame-support/std",
+  "frame-system/std",
+  "pallet-balances/std",
+  "log/std",
+  "sp-std/std",
+  "sp-runtime/std",
+  "t3rn-primitives/std",
+  "t3rn-types/std",
+]

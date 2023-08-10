@@ -4,9 +4,6 @@ import { validate } from "@/utils/fns.ts"
 import { colorLogMsg } from "@/utils/log.ts"
 import { ExtrinsicSchema } from "@/schemas/extrinsic.ts"
 import { readSfxFile, submitSfx } from "@/utils/sfx.ts"
-import { initTransferFile } from "@/commands/init.ts"
-import fs from 'fs'
-
 
 export const spinner = ora()
 
@@ -14,9 +11,6 @@ export const handleSubmitSfxCmd = async (
   sfxFile: string,
   exportMode: boolean,
 ) => {
-  if (!fs.existsSync(sfxFile)) {
-    initTransferFile(sfxFile)
-  }
   const unvalidatedExtrinsic = readSfxFile(sfxFile)
 
   if (!unvalidatedExtrinsic) {
@@ -32,7 +26,6 @@ export const handleSubmitSfxCmd = async (
   }
 
   spinner.text = "Submitting extrinsic..."
-  spinner.info(`Extrinsic: ${JSON.stringify(extrinsic)}`)
   spinner.start()
 
   try {

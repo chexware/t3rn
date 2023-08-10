@@ -196,7 +196,7 @@ impl TryInto<TargetId> for TargetByte {
     }
 }
 
-enum Action {
+pub enum Action {
     Transfer,
     TransferMulti,
     AddLiquidity,
