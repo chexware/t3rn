@@ -6,7 +6,7 @@ The implementation uses the following t3rn's primitives and types:
 
 ### Other Pallets Integration
 
-The pallet functionality could be utilised by other pallets through adding ExecutionSequenceTrait to their Configs
+The pallet functionality could be utilised by other pallets through adding **ExecutionSequenceTrait** to their Configs
 
 ### Testing the implementation
 
@@ -16,6 +16,8 @@ SKIP_WASM_BUILD= cargo test -p pallet-executor-sequence
 ```
 ### Variants
 
-Implementation using generic substrate node template and Polkadot version 1.0 at **take-at-home-task-prototype** branch
+Implementation using generic node template and Polkadot version 1.0 at **take-at-home-task-prototype** branch
 
-Implementation modified t3rn blokchain + primitives and Polkadot version 0.9.27 at **take-at-home-task** branch
+Implementation using modified t3rn blockchain + primitives and Polkadot version 0.9.27 at **take-at-home-task** branch
+
+

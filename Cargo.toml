@@ -1,74 +1,8 @@
-[profile.release]
-debug       = 0 # Set this to 1 or 2 to get more useful backtraces in debugger.
-incremental = true
-panic       = 'unwind'
-
-[profile.dev]
-# Disabling debug info speeds up builds a bunch,
-# and we don't rely on it for debugging that much.
-debug = 0
-
-[profile.dev.package]
-# These speed up local tests.
-kusama-runtime.opt-level     = 3
-librocksdb-sys.opt-level     = 3
-polkadot-runtime.opt-level   = 3
-rococo-runtime.opt-level     = 3
-rustc-hash.opt-level         = 3
-tikv-jemalloc-sys.opt-level  = 3
-wasmtime-cranelift.opt-level = 3
-wasmtime.opt-level           = 3
-
 [workspace]
-exclude = [
-  "vendor"
-]
-# Substrate don't use glob in their workspace, so we don't either.
-# https://github.com/paritytech/substrate/blob/master/Cargo.toml
-# It breaks dependabot.
-# Example: https://github.com/t3rn/t3rn/network/updates/651720180
-# updater | 2023/04/25 09:27:23 ERROR <job_651720180> error: failed to load manifest for workspace member `/home/dependabot/dependabot-updater/dependabot_tmp_dir/pallets/contracts-registry/rpc`
 members = [
-  "finality-verifiers/grandpa",
-  "node/standalone",
-  "node/t0rn-parachain",
-  "node/t3rn-parachain",
-  "pallets/3vm",
-  "pallets/account-manager",
-  "pallets/circuit",
-  "pallets/circuit/vacuum",
-  "pallets/clock",
-  "pallets/contracts",
-  "pallets/contracts-registry",
-  "pallets/contracts-registry/rpc",
-  "pallets/contracts-registry/rpc/runtime-api",
-  "pallets/contracts/rpc",
-  "pallets/contracts/rpc/runtime-api",
-  "pallets/evm",
-  "pallets/evm/precompile/3vm-dispatch",
-  "pallets/evm/precompile/util",
-  "pallets/evm/rpc",
-  "pallets/evm/rpc/runtime-api",
-  "pallets/portal",
-  "pallets/portal/rpc",
-  "pallets/portal/rpc/runtime-api",
-  "pallets/xdns",
-  "pallets/rewards",
-  "pallets/xdns/rpc",
-  "pallets/xdns/rpc/runtime-api",
-  "pallets/executor-sequence",
-  "primitives",
-  "runtime/common-pallets",
-  "runtime/common-types",
-  "runtime/mock",
-  "runtime/standalone",
-  "runtime/t0rn-parachain",
-  "runtime/t3rn-parachain",
-  "types",
-  "types/abi",
+    "node",
+    "pallets/executor-sequence",
+    "runtime",
 ]
-
-[patch."https://github.com/t3rn/t3rn"]
-fp-evm                      = { path = "./pallets/evm/primitives" }
-pallet-contracts-primitives = { path = "./pallets/contracts/primitives" }
-t3rn-primitives             = { path = "./primitives" }
+[profile.release]
+panic = "unwind"

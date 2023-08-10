@@ -1,54 +1,51 @@
 [package]
-authors     = [ "Aleksandar Brayanov <aleksandar.brayanov@protonmail.com>" ]
-description = "Take At Home Task"
-edition     = "2021"
-homepage    = "https://t3rn.io"
-license     = "Apache-2.0"
-name        = "pallet-executor-sequence"
-readme      = "README.md"
-repository  = "https://github.com/paritytech/substrate/"
-version     = "1.0.0"
+name  = "pallet-executor-sequence"
+version = "4.0.0-dev"
+description = "Take At Home Task - T3rn"
+authors = ["Substrate DevHub <https://github.com/chexware>"]
+homepage = "https://substrate.io"
+edition = "2021"
+readme  = "README.md"
+license = "Unlicensed"
+publish = false
+repository = "https://github.com/substrate-developer-hub/substrate-node-template/"
 
 [package.metadata.docs.rs]
-targets = [ "x86_64-unknown-linux-gnu" ]
+targets = ["x86_64-unknown-linux-gnu"]
 
 [dependencies]
 # Debug
 log        = { version = "0.4", default-features = false }
 
 # Codec - related
-codec            = { package = "parity-scale-codec", version = "3.0.0", default-features = false, features = [ "derive", "max-encoded-len" ] }
-scale-info       = { version = "2.9.0", default-features = false, features = [ "derive" ] }
-serde            = { version = "1.0", default-features = false, optional = true, features = [ "derive" ] }
+codec = { package = "parity-scale-codec", version = "3.6.1", default-features = false, features = [
+	"derive",
+] }
+scale-info = { version = "2.5.0", default-features = false, features = ["derive"] }
 
 # Substrate Primitives
-sp-runtime = { default-features = false, git = "https://github.com/paritytech/substrate", branch = 'polkadot-v0.9.27' }
-sp-std = { default-features = false, git = "https://github.com/paritytech/substrate", branch = 'polkadot-v0.9.27' }
-
-# Substrate Dependencies
-frame-support = { default-features = false, git = "https://github.com/paritytech/substrate", branch = 'polkadot-v0.9.27' }
-frame-system  = { default-features = false, git = "https://github.com/paritytech/substrate", branch = 'polkadot-v0.9.27' }
-pallet-balances = { git = "https://github.com/paritytech/substrate", branch = 'polkadot-v0.9.27', default-features = false }
-
-# T3rn Primitives
-t3rn-primitives = { default-features = false, path = "../../primitives" }
-t3rn-types = { default-features = false, path = "../../types", features = [ "runtime" ] }
+frame-support = { version = "4.0.0-dev", default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v1.0.0" }
+frame-system = { version = "4.0.0-dev", default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v1.0.0" }
+pallet-balances = { git = "https://github.com/paritytech/substrate", branch = 'polkadot-v1.0.0', default-features = false }
+sp-std = { git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v1.0.0",  default-features = false  }
+sp-runtime = { version = "24.0.0", git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v1.0.0",  default-features = false  }
 
 [dev-dependencies]
-sp-core = { git = "https://github.com/paritytech/substrate", branch = 'polkadot-v0.9.27' }
-sp-io = { git = "https://github.com/paritytech/substrate", branch = 'polkadot-v0.9.27' }
+sp-core = { version = "21.0.0", git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v1.0.0" }
+sp-io = { version = "23.0.0", git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v1.0.0" }
+
+
 
 [features]
-default = [ "std" ]
+default = ["std"]
 std = [
-  "codec/std",
-  "scale-info/std",
-  "frame-support/std",
-  "frame-system/std",
-  "pallet-balances/std",
-  "log/std",
-  "sp-std/std",
-  "sp-runtime/std",
-  "t3rn-primitives/std",
-  "t3rn-types/std",
+	"codec/std",
+	"frame-support/std",
+	"frame-system/std",
+	"pallet-balances/std",
+  	"log/std",
+	"sp-std/std",
+	"sp-runtime/std",
+	"scale-info/std",
 ]
+try-runtime = ["frame-support/try-runtime"]

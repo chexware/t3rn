@@ -1,10 +1,11 @@
-
 #![cfg_attr(not(feature = "std"), no_std)]
 
+/// Edit this file to define custom logic or remove it if it is not needed.
+/// Learn more about FRAME and the core library of Substrate FRAME pallets:
+/// <https://docs.substrate.io/reference/frame-pallets/>
+//pub use pallet::*;
 use sp_runtime::ArithmeticError;
 use sp_std::{convert::TryInto, vec, vec::Vec};
-//use t3rn_primitives::executors::Executors;
-use t3rn_types::sfx::{Action, TargetId, SideEffect};
 use frame_system::{
                     ensure_signed,
                     pallet_prelude::*, 
@@ -14,9 +15,6 @@ use frame_support::{
                     traits::{Currency, Get, ExistenceRequirement},
                     pallet_prelude::*, PalletId,
 };
-//pub use pallet::*;
-
-
 
 #[cfg(test)]
 mod mock;
@@ -25,28 +23,27 @@ mod mock;
 mod tests;
 
 mod primitives;
-pub use primitives::{ExecutionId, ExecutionSequenceTrait};
-pub use crate::pallet::*;
+
+use primitives::*;
+use crate::pallet::*;
 
 #[frame_support::pallet]
 pub mod pallet {
-                    use super::*;
-                    use frame_support::pallet_prelude::*;
-                    use frame_system::pallet_prelude::*; 
-                    use sp_runtime::traits::CheckedAdd;
-                    use t3rn_types::sfx::SideEffect;
+	use super::*;
+	use frame_support::pallet_prelude::*;
+	use frame_system::pallet_prelude::*;
 
-                    #[pallet::pallet]
+	#[pallet::pallet]
                     #[pallet::without_storage_info]
 	pub struct Pallet<T>(_);
-
+                    
                     pub type BalanceOf<T> = <<T as Config>::Currency as Currency<<T as frame_system::Config>::AccountId>>::Balance;
 
-                    /// This pallet's configuration trait
-                    #[pallet::config]
-                    pub trait Config: frame_system::Config {
-                                        /// Because this pallet emits events, it depends on the runtime's definition of an event.
-		type Event: From<Event<Self>> + IsType<<Self as frame_system::Config>::Event>;
+	/// Configure the pallet by specifying the parameters and types on which it depends.
+	#[pallet::config]
+	pub trait Config: frame_system::Config {
+		/// Because this pallet emits events, it depends on the runtime's definition of an event.
+		type RuntimeEvent: From<Event<Self>> + IsType<<Self as frame_system::Config>::RuntimeEvent>;
 
                                         /// The maximum amount of side effects
 		#[pallet::constant]
@@ -54,11 +51,9 @@ pub mod pallet {
 
                                         /// Currency type for handling storage fees, and other fungible asset-related activities
                                         type Currency: Currency<Self::AccountId>;
+	}
 
-                    }
-
-
-                    #[pallet::storage]
+	#[pallet::storage]
                     #[pallet::getter(fn next_execution_id)]
                     pub type NextExecutionId<T: Config> = StorageValue<_, ExecutionId, ValueQuery>;
 
@@ -75,18 +70,22 @@ pub mod pallet {
                                         /// A new execution was created
                                         ExecutionSequenceCreated(ExecutionId),
                     }
+                    
+	// Errors inform users that something went wrong.
+	#[pallet::error]
+	pub enum Error<T> {
+		/// Invalid data for execution sequence
+		InvalidData,
+	}
 
-                    #[derive(PartialEq)]
-                    #[pallet::error]
-                    pub enum Error<T> {
-                                        /// Invalid data for execution sequence
-                                        InvalidData,
-                    }
-
-                    #[pallet::call]
-                    impl<T: Config> Pallet<T> {
-
-                                        #[pallet::weight(195_000 + T::DbWeight::get().writes(1))]
+	// Dispatchable functions allows users to interact with the pallet and invoke state changes.
+	// These functions materialize as "extrinsics", which are often compared to transactions.
+	// Dispatchable functions must be annotated with a weight and must return a DispatchResult.
+	#[pallet::call]
+	impl<T: Config> Pallet<T> {
+		/// An example dispatchable that takes a singles value as a parameter, writes the value to
+		/// storage and emits an event. This function must be dispatched by a signed extrinsic.
+		#[pallet::weight(Weight::from_parts(195_000, 1) + T::DbWeight::get().writes(1))]
                                         pub fn create_execution_sequence(
                                                             origin: OriginFor<T>,
                                                             data: Vec<u8>,
@@ -95,10 +94,9 @@ pub mod pallet {
                                                             
                                                             Self::do_create_execution_sequence(&origin, &data)
                                         }
+	}
 
-                    }
-
-                    impl<T: Config> Pallet<T> {
+	impl<T: Config> Pallet<T> {
                                         /// Internal creation of execution sequence
                                         pub fn do_create_execution_sequence(creator: &T::AccountId, data: &Vec<u8>) -> DispatchResultWithPostInfo  {
                                                             let mut side_effects_sequence: Vec<SideEffect<T::AccountId, BalanceOf<T>>> = Vec::new();
@@ -127,6 +125,7 @@ pub mod pallet {
                                                             let mut target_network: TargetId = [0u8; 4];
                                                             let mut data = side_effect_data.clone();
                                                             // Decode network byte
+                                        
                                                             match  data.remove(0) {
                                                                                 107 => { // "k" - Kusama
                                                                                                     target_network = *b"ksma";
@@ -144,7 +143,7 @@ pub mod pallet {
                                                             }
                     
                                                             // Decode action byte
-                                                            let mut target_action: Action = Action::Data;
+                                                            let mut target_action: Action = Action::None;
                                                             match data.remove(0) {
                                                                                 109 => { // "m" - multi_tran
                                                                                                     target_action = Action::TransferMulti;
@@ -177,7 +176,7 @@ pub mod pallet {
                     
                                         /// Internal action arguments extran
                                         fn extract_arguments(action: &Action, data: Vec<u8>) -> Result<Vec<u8>, DispatchError> {
-                                                            let mut data_iter = data.split(|c|  *c ==  124);
+                                                            let mut data_iter = data.split(|c|  *c ==  124); // "|" is 12
                     
                                                             match *action {
                                                                                 Action::TransferMulti => {
