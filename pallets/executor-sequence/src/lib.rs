@@ -177,7 +177,7 @@ pub mod pallet {
                     
                                         /// Internal action arguments extran
                                         fn extract_arguments(action: &Action, data: Vec<u8>) -> Result<Vec<u8>, DispatchError> {
-                                                            let mut data_iter = data.split(|c|  *c ==  124);
+                                                            let mut data_iter = data.split(|c|  *c ==  124);  // "|"  =  124
                     
                                                             match *action {
                                                                                 Action::TransferMulti => {
