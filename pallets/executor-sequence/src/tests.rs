@@ -1,6 +1,6 @@
 use frame_support::assert_ok;
 use t3rn_types::sfx::{Action, SideEffect};
-use crate::mock::*;
+use crate::{mock::*, ExecutionStep};
 
 
 
@@ -20,7 +20,11 @@ fn creating_sequence_with_single_side_effect() {
 			encoded_args: vec!["|x|y|100".as_bytes().to_vec()]
 
 		};
-		assert_eq!(Sequence::get_execution_sequence(0),vec![side_effect_1])
+		let execution_step: ExecutionStep<AccountId,Balance> = ExecutionStep { 
+			side_effects: vec![side_effect_1],
+			status: crate::ExecutionStatus::Unprocessed,
+		};
+		assert_eq!(Sequence::get_execution_sequence(0), Some(execution_step))
 	});
 }
 
@@ -51,7 +55,11 @@ fn creating_sequence_with_single_multiple_side_effects() {
 			encoded_args: vec!["|x|y|200".as_bytes().to_vec()]
 
 		};
-		assert_eq!(Sequence::get_execution_sequence(0),vec![side_effect_1, side_effect_2])
+		let execution_step: ExecutionStep<AccountId,Balance> = ExecutionStep { 
+			side_effects: vec![side_effect_1, side_effect_2],
+			status: crate::ExecutionStatus::Unprocessed,
+		};
+		assert_eq!(Sequence::get_execution_sequence(0), Some(execution_step))
 		
 	});
 }
