@@ -59,7 +59,7 @@ pub mod pallet {
                     #[pallet::getter(fn next_execution_id)]
                     pub type NextExecutionId<T: Config> = StorageValue<_, ExecutionId, ValueQuery>;
 
-                    /// Executions store a map of SideEffect sequences organised by ExecutionId, generated through the create_execution_sequence extrinsic
+                    /// Executions store a map of ExecutionStep-s of  SideEffect sequences organised by ExecutionId, generated through the create_execution_sequence extrinsic
                     #[pallet::storage]
                     #[pallet::getter(fn get_execution_sequence)]
                     pub type Executions<T: Config> = StorageMap<_, Twox64Concat, ExecutionId, ExecutionStep<T::AccountId,BalanceOf<T>>, OptionQuery>;
