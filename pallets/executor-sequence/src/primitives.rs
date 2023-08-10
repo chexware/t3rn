@@ -62,9 +62,25 @@ pub enum Action {
      }
  }
 
+ #[derive(Encode, Decode, Clone, Eq, PartialEq, RuntimeDebug, TypeInfo)]
+ pub enum ExecutionStatus {
+     Confirmed,
+     Reverted,
+     Unprocessed,
+ }
+ 
+ #[derive(Clone, Eq, PartialEq, Encode, Decode, Debug, TypeInfo)]
+ pub struct ExecutionStep<AccountId,Balance> {
+     pub side_effects: Vec<SideEffect<AccountId,Balance>>,
+     pub status: ExecutionStatus,
+ }
+ 
+ 
  pub trait ExecutionSequenceTrait<AccountId, Balance> {
-     /// Create execution sequence
-     fn create_sequence(sender: &AccountId, data: &Vec<u8>) -> Result<(), DispatchError>;
-     /// Get execution sequence
-     fn get_sequence(execution_id: &ExecutionId) -> Result<Vec<SideEffect<AccountId, Balance>>, DispatchError>;
-}
+      /// Create execution sequence
+      fn create_sequence(sender: &AccountId, data: &Vec<u8>) -> Result<(), DispatchError>;
+      /// Get execution sequence
+      fn get_sequence(execution_id: &ExecutionId) -> Result<Option<ExecutionStep<AccountId, Balance>>, DispatchError>;
+      /// Update execution status
+      fn update_execution_status(execution_id: &ExecutionId, new_status: ExecutionStatus) -> Result<(), DispatchError>;
+ }

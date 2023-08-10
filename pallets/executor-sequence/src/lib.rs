@@ -58,10 +58,10 @@ pub mod pallet {
                     #[pallet::getter(fn next_execution_id)]
                     pub type NextExecutionId<T: Config> = StorageValue<_, ExecutionId, ValueQuery>;
 
-                    /// Executions store a map of SideEffect sequences organised by ExecutionId, generated through the create_execution_sequence extrinsic
+                    /// Executions store a map of ExecutionStep-s organised by ExecutionId, generated through the create_execution_sequence extrinsic
                     #[pallet::storage]
                     #[pallet::getter(fn get_execution_sequence)]
-                    pub type Executions<T: Config> = StorageMap<_, Twox64Concat, ExecutionId, Vec<SideEffect<T::AccountId,BalanceOf<T>>>, ValueQuery>;
+                    pub type Executions<T: Config> = StorageMap<_, Twox64Concat, ExecutionId, ExecutionStep<T::AccountId,BalanceOf<T>>, OptionQuery>;
 
                     #[pallet::event]
                     #[pallet::generate_deposit(pub (super) fn deposit_event)]
@@ -108,7 +108,13 @@ pub mod pallet {
                                                             for side_effect_data in data.splitn(T::MaxSideEffectPerSequence::get().try_into().unwrap(), |s| *s == 59 ) { // 59 - ";"  as byte
                                                                                 let side_effect = Self::create_side_effect(side_effect_data.to_vec())?;
                                                                                 side_effects_sequence.push(side_effect);
-                                                            }                                      
+                                                            } 
+
+                                                            // Create execution step   
+                                                            let execution_step: ExecutionStep<T::AccountId, BalanceOf<T>> = ExecutionStep {
+                                                                                side_effects: side_effects_sequence,
+                                                                                status: ExecutionStatus::Unprocessed,
+                                                            };                                       
                     
                                                             // Pay storage fee for populating the Executions storage map
                                                             //T::Currency::transfer(creator, &T::NetworkTreasuryAccount::get(), T::StorageFee::get(), ExistenceRequirement::KeepAlive)?;
@@ -117,7 +123,7 @@ pub mod pallet {
                                                             let execution_id = Self::next_execution_id();
                                                             let next_execution_id = execution_id.checked_add(1).ok_or(ArithmeticError::Overflow)?;
                                                             <NextExecutionId<T>>::put(next_execution_id.clone());
-                                                            <Executions<T>>::insert(execution_id, side_effects_sequence);
+                                                            <Executions<T>>::insert(execution_id, execution_step);
                                        
                                                             Self::deposit_event(Event::<T>::ExecutionSequenceCreated(next_execution_id));
                                                             Ok(().into())
@@ -213,8 +219,17 @@ impl<T: Config> ExecutionSequenceTrait<T::AccountId, BalanceOf<T>> for Pallet<T>
                                         Ok(())
                     }
 
-                    fn get_sequence(execution_id: &ExecutionId) -> Result<Vec<SideEffect<T::AccountId, BalanceOf<T>>>, DispatchError> {
+                    fn get_sequence(execution_id: &ExecutionId) -> Result<Option<ExecutionStep<T::AccountId, BalanceOf<T>>>, DispatchError> {
                                         let sequence = Self::get_execution_sequence(execution_id);
                                         Ok(sequence)
+                    }
+
+                    fn update_execution_status(execution_id: &ExecutionId, new_status: ExecutionStatus) -> Result<(), DispatchError> {
+                                        <Executions<T>>::try_mutate_exists(execution_id, |execution_step| -> DispatchResult {
+                                                            let mut execution_step = execution_step.as_mut().ok_or(Error::<T>::InvalidData)?;
+                                                            execution_step.status = new_status;
+                                                            Ok(().into())
+                                        })?;
+                                        Ok(())
                     }
 }
