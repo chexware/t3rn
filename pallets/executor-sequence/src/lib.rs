@@ -3,7 +3,6 @@
 
 use sp_runtime::ArithmeticError;
 use sp_std::{convert::TryInto, vec, vec::Vec};
-//use t3rn_primitives::executors::Executors;
 use t3rn_types::sfx::{Action, TargetId, SideEffect};
 use frame_system::{
                     ensure_signed,
@@ -14,9 +13,6 @@ use frame_support::{
                     traits::{Currency, Get, ExistenceRequirement},
                     pallet_prelude::*, PalletId,
 };
-//pub use pallet::*;
-
-
 
 #[cfg(test)]
 mod mock;
@@ -58,13 +54,12 @@ pub mod pallet {
                     }
 
 
+                    /// Tracks the next execution ID
                     #[pallet::storage]
                     #[pallet::getter(fn next_execution_id)]
                     pub type NextExecutionId<T: Config> = StorageValue<_, ExecutionId, ValueQuery>;
 
                     /// Executions store a map of SideEffect sequences organised by ExecutionId, generated through the create_execution_sequence extrinsic
-                    /// - execution_id
-                    /// - vec <SideEffect>
                     #[pallet::storage]
                     #[pallet::getter(fn get_execution_sequence)]
                     pub type Executions<T: Config> = StorageMap<_, Twox64Concat, ExecutionId, Vec<SideEffect<T::AccountId,BalanceOf<T>>>, ValueQuery>;
@@ -72,7 +67,7 @@ pub mod pallet {
                     #[pallet::event]
                     #[pallet::generate_deposit(pub (super) fn deposit_event)]
                     pub enum Event<T: Config> {
-                                        /// A new execution was created
+                                        /// A new execution was created [execution_id]
                                         ExecutionSequenceCreated(ExecutionId),
                     }
 
@@ -85,7 +80,12 @@ pub mod pallet {
 
                     #[pallet::call]
                     impl<T: Config> Pallet<T> {
-
+                                        /// Create execution sequence of SideEffects with ExecutionId from encoded data.
+		///
+		/// The dispatch origin for this call must be _Signed_.
+		/// `data`: the encoded data as vector of bytes
+		///
+		/// Emits `ExecutionSequenceCreated` if successful.
                                         #[pallet::weight(195_000 + T::DbWeight::get().writes(1))]
                                         pub fn create_execution_sequence(
                                                             origin: OriginFor<T>,
